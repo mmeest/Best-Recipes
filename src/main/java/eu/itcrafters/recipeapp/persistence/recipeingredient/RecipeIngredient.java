@@ -1,7 +1,7 @@
 package eu.itcrafters.recipeapp.persistence.recipeingredient;
 
-import eu.itcrafters.recipeapp.persistence.ingredient.Ingredient;
 import eu.itcrafters.recipeapp.persistence.recipe.Recipe;
+import eu.itcrafters.recipeapp.persistence.ingredient.Ingredient;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -32,5 +32,4 @@ public class RecipeIngredient {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "RECIPE_ID", nullable = false)
     private Recipe recipe;
-
 }
