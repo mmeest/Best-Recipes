@@ -1,5 +1,6 @@
 package eu.itcrafters.recipeapp.persistence.recipe;
 
+import eu.itcrafters.recipeapp.persistence.recipeingredient.RecipeIngredient;
 import eu.itcrafters.recipeapp.persistence.category.Category;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -8,6 +9,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -51,5 +54,8 @@ public class Recipe {
     @NotNull
     @Column(name = "UPDATED_AT", nullable = false)
     private Instant updatedAt;
+
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RecipeIngredient> recipeIngredients = new ArrayList<>();
 
 }

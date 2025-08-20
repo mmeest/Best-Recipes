@@ -1,6 +1,8 @@
 package eu.itcrafters.recipeapp.controller;
 
 import eu.itcrafters.recipeapp.controller.dto.RecipeDTO;
+import eu.itcrafters.recipeapp.controller.dto.CreateRecipeRequest;
+import eu.itcrafters.recipeapp.controller.dto.UpdateRecipeRequest;
 import eu.itcrafters.recipeapp.infrastructure.rest.error.ApiError;
 import eu.itcrafters.recipeapp.service.RecipeService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -46,11 +49,15 @@ public class RecipeController {
             @ApiResponse(responseCode = "404", description = "Category not found",
                     content = @Content(schema = @Schema(implementation = ApiError.class)))
     })
-    public ResponseEntity<RecipeDTO> addRecipe(@RequestBody RecipeDTO recipe) {
+    public ResponseEntity<RecipeDTO> addRecipe(@Valid @RequestBody CreateRecipeRequest request) {
         try {
-            RecipeDTO savedRecipe = recipeService.addRecipe(recipe);
+            RecipeDTO savedRecipe = recipeService.addRecipe(request);
             return ResponseEntity.status(HttpStatus.CREATED).body(savedRecipe);
         } catch (RuntimeException e) {
+            // Return more specific error message
+            if (e.getMessage().contains("Category not found")) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
             return ResponseEntity.badRequest().build();
         }
     }
@@ -64,9 +71,9 @@ public class RecipeController {
             @ApiResponse(responseCode = "404", description = "Recipe does not exist / Category not found",
                     content = @Content(schema = @Schema(implementation = ApiError.class)))
     })
-    public ResponseEntity<RecipeDTO> updateRecipe(@PathVariable Integer recipeId, @RequestBody RecipeDTO recipe) {
+    public ResponseEntity<RecipeDTO> updateRecipe(@PathVariable Integer recipeId, @Valid @RequestBody UpdateRecipeRequest request) {
         try {
-            RecipeDTO updatedRecipe = recipeService.updateRecipe(recipeId, recipe);
+            RecipeDTO updatedRecipe = recipeService.updateRecipe(recipeId, request);
             return ResponseEntity.ok(updatedRecipe);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
